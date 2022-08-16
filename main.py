@@ -1,22 +1,35 @@
 from tkinter import *
-
 from datetime import *
+import time
 
-  
-# importing strftime function to
-# retrieve system's time
-from time import strftime
+# use numbers to represent state
+STOPPED = 0
+STARTED = 1
+RUNNING = 2
+RESET = 3
+
+current_state = RESET
+start_time = 0
+current_time = 0
+elapsed_time = 0
 
 def click_start():
+    global current_state
     print("start clicked")
+    current_state = STARTED
 
 def click_stop():
+    global current_state
     print("stop clicked")
+    current_state = STOPPED
 
 def click_reset():
+    global current_state
     print("reset clicked")
+    current_state = RESET
 
 def click_quit():
+    global current_state
     print("quit clicked")
     window.destroy()
 
@@ -39,12 +52,31 @@ button_quit.place(relx = 0.70, rely = 0.94)
 
 # This function is used to 
 # display time on the label
-def time():
-    string = strftime('%H:%M:%S:%f %p')
-    lbl.config(text = string)
-    lbl.after(100, time)
-
-print("here")
+def update_time():
+    global current_state
+    global start_time
+    global current_time
+    global elapsed_time
+    print(current_state)
+    if (current_state == STOPPED):
+        # do something
+        pass
+    elif (current_state == STARTED):
+        start_time = time.time_ns()
+        current_state = RUNNING
+    elif (current_state == RUNNING):
+        current_time = time.time_ns()
+        elapsed_time = current_time - start_time
+        s = format(round(elapsed_time / 1000000000, 3), '010.3f')
+        lbl.config(text = s)
+        
+    elif (current_state == RESET):
+        current_state = STOPPED
+        s = format(0, '010.3f')
+        print(s)
+        lbl.config(text = s)
+    lbl.after(1, update_time)
+    
   
 # Styling the label widget so that clock
 # will look more attractive
@@ -54,7 +86,7 @@ lbl = Label(window, font = ('calibri', 240, 'bold'), background = 'purple', fore
 # of the tkinter window
 #lbl.pack(anchor = 'center')
 lbl.place(relx=0.05, rely=0.1, relheight = 0.8, relwidth=0.9)
-time()
+update_time()
 
 
 window.attributes('-fullscreen', True)
